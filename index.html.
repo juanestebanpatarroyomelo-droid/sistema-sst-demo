@@ -3,228 +3,302 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Prolub - Gestión SST</title>
+    <title>Prolub SST - Dashboard Profesional</title>
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <!-- Iconos -->
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Lucide Icons -->
     <script src="https://unpkg.com/lucide@latest"></script>
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        prolub: {
+                            purple: '#5B0599',
+                            red: '#F5014D',
+                            grey: '#D9D4D4',
+                            lavender: '#E4C2FF',
+                            midpurple: '#8D5DAC',
+                            yellow: '#FAD000'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
     <style>
-        body { font-family: 'Inter', sans-serif; background-color: #ffffff; }
-        .bg-prolub-purple { background-color: #5B0599; }
-        .text-prolub-purple { color: #5B0599; }
-        .bg-prolub-red { background-color: #F5014D; }
-        .border-prolub-gray { border-color: #D9D4D4; }
-        .bg-prolub-light { background-color: #E4C2FF; }
-        .bg-prolub-yellow { background-color: #FAD000; }
-        
-        .transition-all { transition: all 0.3s ease; }
-        .sidebar-item:hover { background-color: #f3f4f6; color: #5B0599; }
-        .glass { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); }
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; }
+        .transition-content { transition: opacity 0.2s ease-in-out; }
+        .active-link { border-left: 4px solid #F5014D; background-color: #f8f4ff; color: #5B0599 !important; }
     </style>
 </head>
-<body class="text-slate-800">
+<body class="bg-white text-slate-900">
 
     <!-- PANTALLA DE LOGIN -->
-    <div id="login-screen" class="min-h-screen flex items-center justify-center bg-gray-50 px-4">
-        <div class="max-w-md w-full space-y-8 bg-white p-10 rounded-2xl shadow-xl border border-gray-100">
-            <div class="text-center">
-                <!-- Simulación del Logo Prolub -->
-                <div class="flex justify-center items-center mb-6">
-                    <span class="text-3xl font-bold text-prolub-purple">Pro</span>
-                    <div class="relative mx-1">
-                        <svg width="40" height="40" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M20 80L50 20L80 55L20 80Z" fill="#F5014D"/>
-                        </svg>
+    <div id="login-view" class="min-h-screen flex items-center justify-center bg-gray-50 px-4">
+        <div class="max-w-md w-full bg-white p-10 rounded-3xl shadow-2xl border border-gray-100">
+            <div class="flex flex-col items-center mb-8">
+                <!-- Logo Simulado Prolub -->
+                <div class="flex items-center space-x-1 mb-2">
+                    <span class="text-4xl font-extrabold text-prolub-purple">Pro</span>
+                    <div class="w-10 h-10 relative">
+                        <svg viewBox="0 0 100 100" class="w-full h-full"><path d="M10 90L50 10L90 65L10 90Z" fill="#F5014D"/></svg>
                     </div>
-                    <span class="text-3xl font-bold text-prolub-purple">lub</span>
+                    <span class="text-4xl font-extrabold text-prolub-purple">lub</span>
                 </div>
-                <h2 class="text-2xl font-bold text-gray-900">Sistema de Gestión SST</h2>
-                <p class="mt-2 text-sm text-gray-500">Ingresa tus credenciales para continuar</p>
+                <p class="text-gray-400 font-medium uppercase tracking-widest text-xs">Gestión Integral SST</p>
             </div>
-            <form class="mt-8 space-y-6" onsubmit="event.preventDefault(); showDashboard();">
-                <div class="rounded-md shadow-sm space-y-4">
-                    <div>
-                        <label for="user" class="block text-sm font-medium text-gray-700 mb-1">Usuario</label>
-                        <input id="user" name="user" type="text" required class="appearance-none rounded-lg relative block w-full px-3 py-3 border border-gray-300 placeholder-gray-400 text-gray-900 focus:outline-none focus:ring-prolub-purple focus:border-prolub-purple focus:z-10 sm:text-sm" placeholder="ejemplo@prolub.com">
-                    </div>
-                    <div>
-                        <label for="password" class="block text-sm font-medium text-gray-700 mb-1">Contraseña</label>
-                        <input id="password" name="password" type="password" required class="appearance-none rounded-lg relative block w-full px-3 py-3 border border-gray-300 placeholder-gray-400 text-gray-900 focus:outline-none focus:ring-prolub-purple focus:border-prolub-purple focus:z-10 sm:text-sm" placeholder="••••••••">
-                    </div>
-                </div>
-
+            
+            <form id="loginForm" class="space-y-5">
                 <div>
-                    <button type="submit" class="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-semibold rounded-lg text-white bg-prolub-purple hover:bg-opacity-90 focus:outline-none transition-all">
-                        Ingresar
-                    </button>
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">Usuario</label>
+                    <input type="text" id="username" placeholder="admin" class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-prolub-purple focus:border-transparent outline-none transition-all">
                 </div>
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">Contraseña</label>
+                    <input type="password" id="password" placeholder="••••" class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-prolub-purple focus:border-transparent outline-none transition-all">
+                </div>
+                <div id="loginError" class="hidden text-prolub-red text-xs font-bold text-center">Credenciales incorrectas. Intenta con admin / 1234</div>
+                <button type="submit" class="w-full bg-prolub-purple text-white font-bold py-4 rounded-xl hover:bg-opacity-90 transform transition active:scale-95 shadow-lg shadow-purple-200">
+                    Ingresar al Sistema
+                </button>
             </form>
         </div>
     </div>
 
-    <!-- DASHBOARD PRINCIPAL (Oculto por defecto) -->
-    <div id="dashboard" class="hidden min-h-screen flex bg-gray-50">
+    <!-- ESTRUCTURA PRINCIPAL (HIDDEN BY DEFAULT) -->
+    <div id="main-view" class="hidden min-h-screen flex bg-white">
         
         <!-- Sidebar -->
-        <aside class="w-64 bg-white border-r border-prolub-gray hidden md:flex flex-col">
-            <div class="p-6 flex items-center space-x-2">
-                <span class="text-xl font-bold text-prolub-purple">Prolub</span>
-                <div class="w-6 h-6 bg-prolub-red rounded-sm" style="clip-path: polygon(0% 100%, 50% 0%, 100% 70%);"></div>
+        <aside class="w-72 border-r border-prolub-grey flex flex-col h-screen sticky top-0 bg-white z-50">
+            <div class="p-8 flex items-center space-x-2">
+                <span class="text-2xl font-black text-prolub-purple">Pro</span>
+                <div class="w-6 h-6"><svg viewBox="0 0 100 100"><path d="M10 90L50 10L90 65L10 90Z" fill="#F5014D"/></svg></div>
+                <span class="text-2xl font-black text-prolub-purple">lub</span>
             </div>
-            
-            <nav class="mt-6 flex-1 px-4 space-y-2">
-                <a href="#" class="sidebar-item flex items-center px-4 py-3 text-sm font-medium rounded-lg text-prolub-purple bg-prolub-light transition-all">
-                    <i data-lucide="layout-dashboard" class="w-5 h-5 mr-3"></i> Dashboard
-                </a>
-                <a href="#" class="sidebar-item flex items-center px-4 py-3 text-sm font-medium rounded-lg text-gray-600 transition-all">
-                    <i data-lucide="file-text" class="w-5 h-5 mr-3"></i> Reportes
-                </a>
-                <a href="#" class="sidebar-item flex items-center px-4 py-3 text-sm font-medium rounded-lg text-gray-600 transition-all">
-                    <i data-lucide="shield-alert" class="w-5 h-5 mr-3"></i> Matrices de Riesgo
-                </a>
-                <a href="#" class="sidebar-item flex items-center px-4 py-3 text-sm font-medium rounded-lg text-gray-600 transition-all">
-                    <i data-lucide="folder" class="w-5 h-5 mr-3"></i> Documentación
-                </a>
-                <a href="#" class="sidebar-item flex items-center px-4 py-3 text-sm font-medium rounded-lg text-gray-600 transition-all">
-                    <i data-lucide="settings" class="w-5 h-5 mr-3"></i> Configuración
-                </a>
+
+            <nav class="flex-1 px-4 py-4 space-y-2">
+                <button onclick="navigate('inicio')" id="btn-inicio" class="nav-link active-link w-full flex items-center px-6 py-4 text-gray-500 font-semibold rounded-xl transition-all">
+                    <i data-lucide="layout-grid" class="w-5 h-5 mr-4"></i> Inicio
+                </button>
+                <button onclick="navigate('matriz')" id="btn-matriz" class="nav-link w-full flex items-center px-6 py-4 text-gray-500 font-semibold rounded-xl transition-all hover:bg-gray-50">
+                    <i data-lucide="shield-check" class="w-5 h-5 mr-4"></i> Matriz de Riesgos
+                </button>
+                <button onclick="navigate('reportes')" id="btn-reportes" class="nav-link w-full flex items-center px-6 py-4 text-gray-500 font-semibold rounded-xl transition-all hover:bg-gray-50">
+                    <i data-lucide="bar-chart-3" class="w-5 h-5 mr-4"></i> Reportes
+                </button>
+                <button onclick="navigate('docs')" id="btn-docs" class="nav-link w-full flex items-center px-6 py-4 text-gray-500 font-semibold rounded-xl transition-all hover:bg-gray-50">
+                    <i data-lucide="folder-kanban" class="w-5 h-5 mr-4"></i> Documentación
+                </button>
             </nav>
 
-            <div class="p-4 border-t border-gray-100">
-                <button onclick="location.reload()" class="flex items-center text-sm font-medium text-red-500 hover:text-red-700">
-                    <i data-lucide="log-out" class="w-4 h-4 mr-2"></i> Cerrar Sesión
+            <div class="p-6 border-t border-prolub-grey">
+                <button onclick="logout()" class="w-full flex items-center justify-center space-x-2 py-3 border-2 border-prolub-red text-prolub-red rounded-xl font-bold hover:bg-prolub-red hover:text-white transition-all">
+                    <i data-lucide="log-out" class="w-4 h-4"></i>
+                    <span>Cerrar Sesión</span>
                 </button>
             </div>
         </aside>
 
-        <!-- Main Content -->
-        <main class="flex-1 overflow-y-auto">
-            <!-- Top Header -->
-            <header class="bg-white border-b border-gray-100 py-4 px-8 flex justify-between items-center">
-                <h1 class="text-xl font-semibold text-gray-800">Panel de Control SST</h1>
-                <div class="flex items-center space-x-4">
-                    <div class="text-right hidden sm:block">
-                        <p class="text-sm font-medium">Juan Pérez</p>
-                        <p class="text-xs text-gray-500">Coordinador SST</p>
+        <!-- Main Content Area -->
+        <main class="flex-1 overflow-y-auto bg-gray-50/30">
+            <!-- Header Bar -->
+            <header class="bg-white border-b border-prolub-grey h-20 flex items-center justify-between px-10 sticky top-0 z-40">
+                <h2 id="view-title" class="text-xl font-bold text-gray-800 uppercase tracking-tight">Dashboard General</h2>
+                <div class="flex items-center space-x-6">
+                    <div class="flex items-center space-x-3">
+                        <div class="text-right">
+                            <p class="text-sm font-bold leading-tight">Admin Prolub</p>
+                            <p class="text-[10px] text-gray-400 font-bold uppercase tracking-widest">SST Master</p>
+                        </div>
+                        <div class="w-10 h-10 rounded-full bg-prolub-lavender flex items-center justify-center text-prolub-purple border-2 border-prolub-purple/10">
+                            <i data-lucide="user" class="w-5 h-5"></i>
+                        </div>
                     </div>
-                    <div class="w-10 h-10 rounded-full bg-prolub-purple flex items-center justify-center text-white font-bold">JP</div>
                 </div>
             </header>
 
-            <!-- Dashboard Content -->
-            <div class="p-8 max-w-7xl mx-auto">
-                <!-- Welcome Section -->
-                <div class="mb-8">
-                    <h2 class="text-3xl font-bold text-gray-900">Bienvenido, Juan</h2>
-                    <p class="text-gray-500">Resumen general del estado de seguridad hoy.</p>
-                </div>
-
-                <!-- KPIs -->
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
-                    <!-- KPI 1 -->
-                    <div class="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm transition-all hover:shadow-md">
-                        <div class="flex items-center justify-between mb-4">
-                            <div class="p-3 bg-red-50 text-prolub-red rounded-xl">
-                                <i data-lucide="activity"></i>
-                            </div>
-                            <span class="text-xs font-bold text-red-500 bg-red-50 px-2 py-1 rounded-full">-5% vs mes ant.</span>
-                        </div>
-                        <p class="text-sm text-gray-500 font-medium">Índice de Accidentalidad</p>
-                        <h3 class="text-2xl font-bold mt-1">1.2%</h3>
-                    </div>
-
-                    <!-- KPI 2 -->
-                    <div class="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm transition-all hover:shadow-md">
-                        <div class="flex items-center justify-between mb-4">
-                            <div class="p-3 bg-purple-50 text-prolub-purple rounded-xl">
-                                <i data-lucide="users"></i>
-                            </div>
-                            <span class="text-xs font-bold text-green-500 bg-green-50 px-2 py-1 rounded-full">85% completado</span>
-                        </div>
-                        <p class="text-sm text-gray-500 font-medium">Capacitaciones Pendientes</p>
-                        <h3 class="text-2xl font-bold mt-1">12 Empleados</h3>
-                    </div>
-
-                    <!-- KPI 3 -->
-                    <div class="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm transition-all hover:shadow-md">
-                        <div class="flex items-center justify-between mb-4">
-                            <div class="p-3 bg-yellow-50 text-prolub-yellow rounded-xl">
-                                <i data-lucide="clipboard-check"></i>
-                            </div>
-                            <span class="text-xs font-bold text-yellow-600 bg-yellow-50 px-2 py-1 rounded-full">3 hoy</span>
-                        </div>
-                        <p class="text-sm text-gray-500 font-medium">Inspecciones Realizadas</p>
-                        <h3 class="text-2xl font-bold mt-1">24 / 30</h3>
-                    </div>
-                </div>
-
-                <!-- Main Section Grid -->
-                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                    <!-- Table: Upcoming Inspections -->
-                    <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
-                        <div class="flex justify-between items-center mb-6">
-                            <h3 class="font-bold text-lg">Inspecciones Programadas</h3>
-                            <button class="text-prolub-purple text-sm font-semibold hover:underline">Ver todas</button>
-                        </div>
-                        <div class="space-y-4">
-                            <div class="flex items-center p-4 bg-gray-50 rounded-xl">
-                                <div class="w-12 h-12 bg-white rounded-lg flex items-center justify-center shadow-sm mr-4">
-                                    <span class="text-prolub-purple font-bold">15</span>
-                                </div>
-                                <div class="flex-1">
-                                    <h4 class="text-sm font-bold">Inspección Locativa - Planta A</h4>
-                                    <p class="text-xs text-gray-500">Pendiente de ejecución</p>
-                                </div>
-                                <span class="px-3 py-1 bg-yellow-100 text-yellow-700 text-xs font-bold rounded-full text-prolub-yellow">Urgente</span>
-                            </div>
-                            <div class="flex items-center p-4 bg-gray-50 rounded-xl">
-                                <div class="w-12 h-12 bg-white rounded-lg flex items-center justify-center shadow-sm mr-4">
-                                    <span class="text-prolub-purple font-bold">18</span>
-                                </div>
-                                <div class="flex-1">
-                                    <h4 class="text-sm font-bold">Revisión de Extintores</h4>
-                                    <p class="text-xs text-gray-500">Programada mensualmente</p>
-                                </div>
-                                <span class="px-3 py-1 bg-green-100 text-green-700 text-xs font-bold rounded-full">Al día</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Risk Chart Placeholder -->
-                    <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 flex flex-col justify-center items-center">
-                        <h3 class="font-bold text-lg w-full mb-6 text-left">Matriz de Riesgo Crítico</h3>
-                        <div class="w-48 h-48 rounded-full border-[15px] border-prolub-light flex items-center justify-center relative">
-                            <div class="absolute inset-0 border-[15px] border-prolub-purple rounded-full" style="clip-path: polygon(0 0, 100% 0, 100% 60%, 0 60%);"></div>
-                            <div class="text-center">
-                                <span class="text-3xl font-bold">60%</span>
-                                <p class="text-[10px] text-gray-500 uppercase font-bold tracking-wider">Mitigado</p>
-                            </div>
-                        </div>
-                        <div class="mt-6 grid grid-cols-2 gap-4 w-full">
-                            <div class="flex items-center text-xs">
-                                <div class="w-3 h-3 bg-prolub-purple rounded-full mr-2"></div> Riesgos Altos
-                            </div>
-                            <div class="flex items-center text-xs">
-                                <div class="w-3 h-3 bg-prolub-light rounded-full mr-2"></div> Riesgos Medios
-                            </div>
-                        </div>
-                    </div>
-                </div>
+            <div id="content-area" class="p-10 max-w-7xl mx-auto transition-content">
+                <!-- EL CONTENIDO SE INYECTA AQUÍ POR JS -->
             </div>
         </main>
     </div>
 
     <script>
-        // Inicializar Iconos
-        lucide.createIcons();
+        // Lógica de Vistas
+        const views = {
+            inicio: `
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-10">
+                    <div class="bg-white p-8 rounded-3xl border border-prolub-grey shadow-sm hover:shadow-xl transition-shadow border-t-4 border-t-prolub-red">
+                        <p class="text-gray-400 font-bold text-xs uppercase mb-2">Accidentalidad</p>
+                        <h3 class="text-4xl font-black text-prolub-purple">1.2%</h3>
+                        <p class="text-green-500 text-xs font-bold mt-2">↓ 0.4% desde el mes pasado</p>
+                    </div>
+                    <div class="bg-white p-8 rounded-3xl border border-prolub-grey shadow-sm hover:shadow-xl transition-shadow border-t-4 border-t-prolub-purple">
+                        <p class="text-gray-400 font-bold text-xs uppercase mb-2">Cumplimiento Legal</p>
+                        <h3 class="text-4xl font-black text-prolub-purple">94%</h3>
+                        <p class="text-prolub-midpurple text-xs font-bold mt-2">Auditado hace 5 días</p>
+                    </div>
+                    <div class="bg-white p-8 rounded-3xl border border-prolub-grey shadow-sm hover:shadow-xl transition-shadow border-t-4 border-t-prolub-yellow">
+                        <p class="text-gray-400 font-bold text-xs uppercase mb-2">Capacitaciones</p>
+                        <h3 class="text-4xl font-black text-prolub-purple">88%</h3>
+                        <p class="text-orange-500 text-xs font-bold mt-2">12 sesiones pendientes</p>
+                    </div>
+                </div>
 
-        // Función para cambiar pantallas (Simulación)
-        function showDashboard() {
-            document.getElementById('login-screen').classList.add('hidden');
-            document.getElementById('dashboard').classList.remove('hidden');
-            // Re-inicializar iconos porque estaban ocultos
-            lucide.createIcons();
+                <div class="bg-white p-8 rounded-3xl border border-prolub-grey shadow-sm">
+                    <div class="flex justify-between items-center mb-8">
+                        <div>
+                            <h4 class="text-lg font-bold">Estado de Riesgos por Mes</h4>
+                            <p class="text-sm text-gray-400">Análisis comparativo de incidentes</p>
+                        </div>
+                    </div>
+                    <div class="h-80">
+                        <canvas id="mainChart"></canvas>
+                    </div>
+                </div>
+            `,
+            matriz: `
+                <div class="bg-white rounded-3xl border border-prolub-grey overflow-hidden shadow-sm">
+                    <div class="p-6 border-b border-prolub-grey bg-gray-50 flex justify-between items-center">
+                        <h3 class="font-bold">Identificación de Peligros y Valoración de Riesgos</h3>
+                        <button class="bg-prolub-purple text-white px-4 py-2 rounded-lg text-sm font-bold">+ Nuevo Hallazgo</button>
+                    </div>
+                    <table class="w-full text-left">
+                        <thead class="bg-gray-50 text-xs font-bold text-gray-500 uppercase tracking-widest">
+                            <tr>
+                                <th class="px-6 py-4">Proceso</th>
+                                <th class="px-6 py-4">Peligro</th>
+                                <th class="px-6 py-4">Consecuencia</th>
+                                <th class="px-6 py-4 text-center">Nivel Riesgo</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-prolub-grey">
+                            <tr class="hover:bg-gray-50">
+                                <td class="px-6 py-4 text-sm">Producción</td>
+                                <td class="px-6 py-4 text-sm font-medium">Ruido continuo</td>
+                                <td class="px-6 py-4 text-sm italic">Hipoacusia</td>
+                                <td class="px-6 py-4 text-center"><span class="bg-prolub-yellow px-3 py-1 rounded-full text-[10px] font-black uppercase">Medio</span></td>
+                            </tr>
+                            <tr class="hover:bg-gray-50">
+                                <td class="px-6 py-4 text-sm">Almacenaje</td>
+                                <td class="px-6 py-4 text-sm font-medium">Carga de materiales</td>
+                                <td class="px-6 py-4 text-sm italic">Lesiones lumbares</td>
+                                <td class="px-6 py-4 text-center"><span class="bg-prolub-red text-white px-3 py-1 rounded-full text-[10px] font-black uppercase">Alto</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            `,
+            reportes: `
+                <div class="flex items-center justify-center h-64 border-4 border-dashed border-prolub-grey rounded-3xl">
+                    <div class="text-center">
+                        <i data-lucide="construction" class="w-12 h-12 text-prolub-grey mx-auto mb-4"></i>
+                        <h3 class="text-prolub-midpurple font-bold">Modulo de Reportes Estadísticos</h3>
+                        <p class="text-gray-400 text-sm italic">Generando analítica en tiempo real...</p>
+                    </div>
+                </div>
+            `,
+            docs: `
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
+                    ${['Políticas SST', 'Plan Emergencias', 'Fichas Seguridad', 'Formatos Inspección'].map(doc => `
+                        <div class="bg-white p-6 rounded-2xl border border-prolub-grey hover:border-prolub-purple transition-all cursor-pointer group shadow-sm">
+                            <i data-lucide="file-text" class="w-8 h-8 text-prolub-midpurple mb-4 group-hover:scale-110 transition-transform"></i>
+                            <h4 class="font-bold text-sm text-gray-700">${doc}</h4>
+                            <p class="text-[10px] text-gray-400 mt-2">Actualizado: Ene 2024</p>
+                        </div>
+                    `).join('')}
+                </div>
+            `
+        };
+
+        // Lógica de Autenticación
+        document.getElementById('loginForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const user = document.getElementById('username').value;
+            const pass = document.getElementById('password').value;
+
+            if(user === 'admin' && pass === '1234') {
+                document.getElementById('login-view').classList.add('hidden');
+                document.getElementById('main-view').classList.remove('hidden');
+                navigate('inicio');
+            } else {
+                document.getElementById('loginError').classList.remove('hidden');
+            }
+        });
+
+        function logout() {
+            document.getElementById('main-view').classList.add('hidden');
+            document.getElementById('login-view').classList.remove('hidden');
+            document.getElementById('loginForm').reset();
+            document.getElementById('loginError').classList.add('hidden');
         }
+
+        // Navegación SPA
+        function navigate(viewId) {
+            const contentArea = document.getElementById('content-area');
+            const viewTitle = document.getElementById('view-title');
+            
+            // Animación fade out
+            contentArea.style.opacity = '0';
+
+            setTimeout(() => {
+                contentArea.innerHTML = views[viewId];
+                viewTitle.innerText = viewId === 'inicio' ? 'Dashboard General' : viewId.replace('_', ' ');
+                
+                // Actualizar estilo de menú lateral
+                document.querySelectorAll('.nav-link').forEach(link => link.classList.remove('active-link'));
+                document.getElementById(`btn-${viewId}`).classList.add('active-link');
+
+                // Reinicializar iconos y gráficos
+                lucide.createIcons();
+                if(viewId === 'inicio') initChart();
+
+                // Animación fade in
+                contentArea.style.opacity = '1';
+            }, 200);
+        }
+
+        function initChart() {
+            const ctx = document.getElementById('mainChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun'],
+                    datasets: [{
+                        label: 'Incidentes Registrados',
+                        data: [5, 2, 8, 4, 3, 1],
+                        backgroundColor: '#5B0599',
+                        borderRadius: 12,
+                        barThickness: 30
+                    }, {
+                        label: 'Inspecciones Realizadas',
+                        data: [15, 18, 12, 16, 20, 22],
+                        backgroundColor: '#F5014D',
+                        borderRadius: 12,
+                        barThickness: 30
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { position: 'top', labels: { font: { weight: 'bold', size: 12 } } }
+                    },
+                    scales: {
+                        y: { grid: { display: false }, border: { display: false } },
+                        x: { grid: { display: false }, border: { display: false } }
+                    }
+                }
+            });
+        }
+
+        // Inicializar Iconos de Login
+        lucide.createIcons();
     </script>
 </body>
 </html>
